@@ -1,0 +1,27 @@
+{
+  "name": "egads-jam",
+  "version": "1.0.0",
+  "description": "2018 Game Jam entry",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gipsond/egads-jam-2018.git"
+  },
+  "author": "David Gipson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gipsond/egads-jam-2018/issues"
+  },
+  "homepage": "https://github.com/gipsond/egads-jam-2018#readme",
+  "devDependencies": {
+    "eslint": "^5.6.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0"
+  }
+}
