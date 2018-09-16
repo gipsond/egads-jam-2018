@@ -4,7 +4,7 @@ var blockRPG = {}
 
 var cursors
 var walls
-var player
+var friendBlock
 var circlemen
 var scoreText
 var score = 0
@@ -20,9 +20,12 @@ blockRPG.state0.prototype = {
     game.load.image('walls', 'assets/tilemaps/walls.png')
     game.load.spritesheet('player', 'assets/sprites/spritesheets/gelatinous_block.png', 16, 16)
     game.load.spritesheet('circleman', 'assets/sprites/spritesheets/circleman.png', 16, 16)
+    game.load.spritesheet('merged', 'assets/sprites/spritesheets/merged_blocks.png', 32, 16)
 
     game.load.bitmapFont('pixeled', 'assets/fonts/pixeled0.png', 'assets/fonts/pixeled0.fnt')
   },
+
+  player: null,
 
   create: function () {
     // Pixel perfect scaling setup
@@ -40,10 +43,13 @@ blockRPG.state0.prototype = {
     map.createLayer('grid')
     walls = map.createLayer('walls')
 
-    // Player setup
-    player = game.add.sprite(BLOCK_WIDTH * 1, BLOCK_WIDTH * 1, 'player')
-    player.animations.add('idle', [0, 1, 2, 3, 4])
-    player.animations.play('idle', 3, true)
+    // player setup
+    this.player = game.add.sprite(BLOCK_WIDTH * 1, BLOCK_WIDTH * 1, 'player')
+    this.player.animations.add('idle', [0, 1, 2, 3, 4])
+    this.player.animations.play('idle', 3, true)
+
+    // Friend setup
+    friendBlock = game.add.sprite(BLOCK_WIDTH * 8, BLOCK_WIDTH * 13, 'player')
 
     // Enemy setup
     circlemen = game.add.group()
@@ -59,7 +65,7 @@ blockRPG.state0.prototype = {
     // Physics setup
     game.physics.startSystem(Phaser.Physics.ARCADE) // Redundant, already enabled by default
     map.setCollisionBetween(1, 14, true, 'walls')
-    game.physics.arcade.enable(player, Phaser.Physics.ARCADE)
+    game.physics.arcade.enable([this.player, friendBlock], Phaser.Physics.ARCADE)
 
     // Cursor key input setup
     cursors = game.input.keyboard.createCursorKeys()
@@ -81,23 +87,33 @@ blockRPG.state0.prototype = {
   update: function () {
     const MOV_SPEED = 150
 
-    if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
+    if (this.player.body.velocity.x === 0 && this.player.body.velocity.y === 0) {
       if (cursors.up.isDown) {
-        player.body.velocity.y -= MOV_SPEED
+        this.player.body.velocity.y -= MOV_SPEED
       } else if (cursors.down.isDown) {
-        player.body.velocity.y += MOV_SPEED
+        this.player.body.velocity.y += MOV_SPEED
       } else if (cursors.left.isDown) {
-        player.body.velocity.x -= MOV_SPEED
+        this.player.body.velocity.x -= MOV_SPEED
       } else if (cursors.right.isDown) {
-        player.body.velocity.x += MOV_SPEED
+        this.player.body.velocity.x += MOV_SPEED
       }
     }
 
-    game.physics.arcade.collide(player, walls)
-    game.physics.arcade.overlap(player, circlemen, this.killCircleman, null, this)
+    game.physics.arcade.collide(this.player, walls)
+    game.physics.arcade.overlap(this.player, circlemen, this.killCircleman, null, this)
+    game.physics.arcade.collide(this.player, friendBlock, this.mergeBlocks, null, this)
   },
 
-  killCircleman (player, circleman) {
+  mergeBlocks: function (player, friendBlock) {
+    player.kill()
+    friendBlock.kill()
+    this.player = game.add.sprite(BLOCK_WIDTH * 7, BLOCK_WIDTH * 13, 'merged')
+    this.player.animations.add('idle', [0, 1, 2, 3, 4])
+    this.player.animations.play('idle', 3, true)
+    game.physics.arcade.enable(this.player, Phaser.Physics.ARCADE)
+  },
+
+  killCircleman: function (player, circleman) {
     circleman.kill()
     score += 5
     updateScoreText(score)
