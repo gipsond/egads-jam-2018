@@ -46,25 +46,21 @@ blockRPG.state0.prototype = {
   tween: null,
 
   update: function () {
-    if (this.tween === null || !this.tween.isRunning) {
+    const MOV_SPEED = 200
+
+    if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
       if (cursors.up.isDown) {
-        this.tween = this.addMovementTween({ y: '-16' })
+        player.body.velocity.y -= MOV_SPEED
       } else if (cursors.down.isDown) {
-        this.tween = this.addMovementTween({ y: '+16' })
+        player.body.velocity.y += MOV_SPEED
       } else if (cursors.left.isDown) {
-        this.tween = this.addMovementTween({ x: '-16' })
+        player.body.velocity.x -= MOV_SPEED
       } else if (cursors.right.isDown) {
-        this.tween = this.addMovementTween({ x: '+16' })
+        player.body.velocity.x += MOV_SPEED
       }
     }
 
     game.physics.arcade.collide(player, walls, function () { console.log('bumpin uglies') })
-
-  },
-
-  addMovementTween: function (tweenProps) {
-    const TWEEN_TIME = 250
-    return game.add.tween(player.body.position).to(tweenProps, TWEEN_TIME, Phaser.Easing.Bounce.Out, true)
   }
 
 }
