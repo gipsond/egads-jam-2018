@@ -13,34 +13,45 @@ blockRPG.state0.prototype = {
     game.load.tilemap('stage0', 'assets/tilemaps/stage0.json', null, Phaser.Tilemap.TILED_JSON)
     game.load.image('grid', 'assets/tilemaps/grid.png')
     game.load.image('walls', 'assets/tilemaps/walls.png')
-
     game.load.spritesheet('player', 'assets/sprites/spritesheets/gelatinous_block.png', 16, 16)
+
+    game.load.bitmapFont('pixeled', 'assets/fonts/pixeled0.png', 'assets/fonts/pixeled0.fnt')
   },
 
   create: function () {
-    game.physics.startSystem(Phaser.Physics.ARCADE) // Redundant, already enabled by default
-
+    // Pixel perfect scaling setup
     game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE
     game.scale.setUserScale(2, 2)
     game.renderer.renderSession.roundPixels = true
     Phaser.Canvas.setImageRenderingCrisp(game.canvas)
 
+    // Tilemap setup
     var map = game.add.tilemap('stage0')
     map.addTilesetImage('grid')
     map.addTilesetImage('walls')
 
+    // Layer setup
     map.createLayer('grid')
     walls = map.createLayer('walls')
 
-    map.setCollisionBetween(1, 12, true, 'walls')
-
+    // Player setup
     player = game.add.sprite(16, 16, 'player')
     player.animations.add('idle', [0, 1, 2, 3, 4])
     player.animations.play('idle', 3, true)
 
+    // Physics setup
+    game.physics.startSystem(Phaser.Physics.ARCADE) // Redundant, already enabled by default
+    map.setCollisionBetween(1, 12, true, 'walls')
     game.physics.arcade.enable(player, Phaser.Physics.ARCADE)
 
+    // Cursor key input setup
     cursors = game.input.keyboard.createCursorKeys()
+
+    // Text setup
+    var scoreBacking = game.add.graphics(0, 0)
+    scoreBacking.beginFill(0x000000)
+    scoreBacking.drawRect(3, 3, 58, 10)
+    game.add.bitmapText(5, 4, 'pixeled', 'Score: UNSET', 5)
   },
 
   tween: null,
@@ -60,7 +71,7 @@ blockRPG.state0.prototype = {
       }
     }
 
-    game.physics.arcade.collide(player, walls, function () { console.log('bumpin uglies') })
+    game.physics.arcade.collide(player, walls)
   }
 
 }
