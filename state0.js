@@ -6,6 +6,7 @@ var cursors
 var walls
 var friendBlock
 var circlemen
+var knights
 var scoreText
 var score = 0
 
@@ -21,6 +22,7 @@ blockRPG.state0.prototype = {
     game.load.spritesheet('player', 'assets/sprites/spritesheets/gelatinous_block.png', 16, 16)
     game.load.spritesheet('circleman', 'assets/sprites/spritesheets/circleman.png', 16, 16)
     game.load.spritesheet('merged', 'assets/sprites/spritesheets/merged_blocks.png', 32, 16)
+    game.load.spritesheet('knight', 'assets/sprites/spritesheets/knight.png', 16, 16)
 
     game.load.bitmapFont('pixeled', 'assets/fonts/pixeled0.png', 'assets/fonts/pixeled0.fnt')
   },
@@ -62,6 +64,14 @@ blockRPG.state0.prototype = {
     ]
     CIRCLE_LOCATIONS.forEach(this.addCircleman)
 
+    knights = game.add.group()
+    knights.enableBody = true
+    const KNIGHT_LOCATIONS = [
+      [27, 17],
+      [28, 17]
+    ]
+    KNIGHT_LOCATIONS.forEach(this.addKnight)
+
     // Physics setup
     game.physics.startSystem(Phaser.Physics.ARCADE) // Redundant, already enabled by default
     map.setCollisionBetween(1, 14, true, 'walls')
@@ -80,6 +90,10 @@ blockRPG.state0.prototype = {
 
   addCircleman: function (value) {
     circlemen.create(BLOCK_WIDTH * value[0], BLOCK_WIDTH * value[1], 'circleman')
+  },
+
+  addKnight: function (value) {
+    knights.create(BLOCK_WIDTH * value[0], BLOCK_WIDTH * value[1], 'knight')
   },
 
   tween: null,
@@ -101,6 +115,7 @@ blockRPG.state0.prototype = {
 
     game.physics.arcade.collide(this.player, walls)
     game.physics.arcade.overlap(this.player, circlemen, this.killCircleman, null, this)
+    game.physics.arcade.overlap(this.player, knights, this.killCircleman, null, this)
     game.physics.arcade.collide(this.player, friendBlock, this.mergeBlocks, null, this)
   },
 
