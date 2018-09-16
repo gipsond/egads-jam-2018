@@ -30,6 +30,8 @@ blockRPG.state0.prototype = {
   player: null,
 
   create: function () {
+    score = 0
+
     // Pixel perfect scaling setup
     game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE
     game.scale.setUserScale(2, 2)
@@ -60,7 +62,16 @@ blockRPG.state0.prototype = {
       [1, 7],
       [3, 4],
       [7, 9],
-      [4, 16]
+      [4, 16],
+      [16, 11],
+      [15, 3],
+      [18, 13],
+      [17, 15],
+      [22, 10],
+      [29, 8],
+      [30, 5],
+      [24, 1],
+      [30, 8]
     ]
     CIRCLE_LOCATIONS.forEach(this.addCircleman)
 
@@ -115,7 +126,7 @@ blockRPG.state0.prototype = {
 
     game.physics.arcade.collide(this.player, walls)
     game.physics.arcade.overlap(this.player, circlemen, this.killCircleman, null, this)
-    game.physics.arcade.overlap(this.player, knights, this.killCircleman, null, this)
+    game.physics.arcade.overlap(this.player, knights, this.killKnight, null, this)
     game.physics.arcade.collide(this.player, friendBlock, this.mergeBlocks, null, this)
   },
 
@@ -130,8 +141,15 @@ blockRPG.state0.prototype = {
 
   killCircleman: function (player, circleman) {
     circleman.kill()
-    score += 5
+    score += 10
     updateScoreText(score)
+  },
+
+  killKnight: function (player, circleman) {
+    this.killCircleman(player, circleman)
+    game.time.events.add(250, function () {
+      game.state.start('state1')
+    })
   }
 }
 
